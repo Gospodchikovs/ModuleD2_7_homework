@@ -6,14 +6,24 @@ class Author(models.Model):
     rating = models.IntegerField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    def update_rating(self):
-        # Он состоит из следующего:
-        # - суммарный рейтинг каждой статьи автора умножается на 3;
+    # обновление рейтинга
+    def update_rating(self) -> int:
+        # Рейтинг состоит из следующих слагаемых:
+        # - рейтинг каждой статьи автора умножается на 3;
         # - суммарный рейтинг всех комментариев автора;
         # - суммарный рейтинг всех комментариев к статьям автора.
-        # rating = 1
-        # 3 * author_rating[0]['rating'] + sum_of_author_comments + sum_of_comments_to_author_articles
-        return
+        result_rating = 0
+        rating_list = Post.objects.filter(author=self.id).values('rating')
+        for rating_object in rating_list:
+            result_rating += rating_object.get('rating') * 3
+        rating_list = Comment.objects.filter(user=self.user).values('rating')
+        for rating in rating_list:
+            result_rating += rating.get('rating')
+        rating_list = Comment.objects.filter(post__author=self).values('rating')
+        for rating in rating_list:
+            result_rating += rating.get('rating')
+        self.rating = result_rating
+        return self.rating
 
 
 class Category(models.Model):
@@ -37,10 +47,12 @@ class Post(models.Model):
     # увеличенрие рейтинга на 1
     def like(self):
         self.rating += 1
+        self.save()
 
     # уменьшение рейгинга на 1
     def dislike(self):
         self.rating -= 1           # рейтинг может быть отрицательным
+        self.save()
 
     # получение превью строки с окончанием на '...'
     def preview(self) -> str:
@@ -62,8 +74,10 @@ class Comment(models.Model):
 
     # увеличенрие рейтинга на 1
     def like(self):
-        self.rating += 1
+        self.rating += 1            # рейтинг может быть отрицательным
+        self.save()
 
     # уменьшение рейгинга на 1
     def dislike(self):
-        self.rating -= 1           # рейтинг может быть отрицательным
+        self.rating -= 1            # рейтинг может быть отрицательным
+        self.save()
