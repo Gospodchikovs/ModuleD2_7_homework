@@ -14,6 +14,9 @@ class Author(models.Model):
         # - суммарный рейтинг всех комментариев к статьям автора.
         result_rating = 0
         rating_list = Post.objects.filter(author=self.id).values('rating')
+        #
+        # class Sum(expression, output_field=None, distinct=False, filter=None, **extra)
+
         for rating_object in rating_list:
             result_rating += rating_object.get('rating') * 3
         rating_list = Comment.objects.filter(user=self.user).values('rating')
@@ -23,6 +26,7 @@ class Author(models.Model):
         for rating in rating_list:
             result_rating += rating.get('rating')
         self.rating = result_rating
+        self.save()
         return self.rating
 
 
