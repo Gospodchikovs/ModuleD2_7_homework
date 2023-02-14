@@ -17,8 +17,8 @@ category4 = Category.objects.create(topic='Politics')
 
 # 4.Добавить 2 статьи и 1 новость.
 article1 = Post.objects.create(author=author1, type='AR', heading='Article 1', body='Article Body 1', rating=0)
-article2 = Post.objects.create(author=author1, type='AR', heading='News 1', body='News Body 1', rating=0)
-news1 = Post.objects.create(author=author2, type='NW', heading='News 2', body='News Body 2', rating=0)
+article2 = Post.objects.create(author=author1, type='AR', heading='Article 2', body='Article Body 2', rating=0)
+news1 = Post.objects.create(author=author2, type='NW', heading='News 2', body='News Body 1', rating=0)
 
 # 5.Присвоить им категории (как минимум в одной статье/новости должно быть не меньше 2 категорий).
 PostCategory.objects.create(post=article1, category=category1)
@@ -56,20 +56,21 @@ author1.update_rating()
 author2.update_rating()
 
 # 9.Вывести username и рейтинг лучшего пользователя (применяя сортировку и возвращая поля первого объекта).
-best_authors = Author.objects.all().order_by('-rating').values('user__username', 'rating')
-print('Лучший пользователь - ', best_authors[0].get('user__username'), 'с рейтингом', best_authors[0].get('rating'))
+best_author = Author.objects.all().order_by('-rating').values('user__username', 'rating')[0]    # берем только первого
+print('Лучший пользователь - ', best_author['user__username'], 'с рейтингом', best_author['rating'])
 
 # 10.Вывести дату, username, рейтинг, заголовок и превью лучшей статьи, основываясь на лайках/дислайках к этой статье.
-articles_list = Post.objects.all().order_by('-rating')
-articles = articles_list.values('time_create', 'author__user__username', 'rating', 'heading')
-print('Лучшая статья - пользователя ', articles[0].get('author__user__username'), 'рейтинг-', articles[0].get('rating'))
-print('Заголовок статьи и дата создания- ', articles[0].get('heading'),
-      articles[0].get('time_create').strftime('- %m/%d/%y %H:%M:%S'))
-print('Краткое содержимое - ', articles_list[0].preview())
+best_post = Post.objects.all().order_by('-rating')
+best_post_fields = best_post.values('time_create', 'author__user__username', 'rating', 'heading')[0]
+print('Лучшая статья-пользователя ', best_post_fields['author__user__username'],
+      'рейтинг-', best_post_fields['rating'])
+print('Заголовок статьи и дата создания- ', best_post_fields['heading'],
+      best_post_fields['time_create'].strftime('- %m/%d/%y %H:%M:%S'))
+print('Краткое содержимое - ', best_post[0].preview())
 
 # 11.Вывести все комментарии (дата, пользователь, рейтинг, текст) к этой статье
-comments = Comment.objects.filter(post=articles_list[0]).values('time_create', 'user', 'comment', 'rating')
+comments = Comment.objects.filter(post=best_post[0]).values('time_create', 'user__username', 'comment', 'rating')
 for comment in comments:
-    print('Комментарий к статье пользлователя', comment.get('user'), 'от',
-          comment.get('time_create').strftime('%m/%d/%y %H:%M:%S'),
-          'с рейтингом', comment.get('rating'), '\n', comment.get('comment'))
+    print('Комментарий к статье пользователя', comment['user__username'], 'от',
+          comment['time_create'].strftime('%m/%d/%y %H:%M:%S'),
+          'с рейтингом', comment['rating'], '\n', comment['comment'])
