@@ -1,31 +1,24 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Sum
 
 
 class Author(models.Model):
     rating = models.IntegerField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    # обновление рейтинга
+    # обновление рейтинга автора
     def update_rating(self) -> int:
         # Рейтинг состоит из следующих слагаемых:
-        # - рейтинг каждой статьи автора умножается на 3;
+        # - суммарный рейтинг статей автора умножается на 3;
         # - суммарный рейтинг всех комментариев автора;
         # - суммарный рейтинг всех комментариев к статьям автора.
-        result_rating = 0
-        rating_list = Post.objects.filter(author=self.id).values('rating')
-        #
-        # class Sum(expression, output_field=None, distinct=False, filter=None, **extra)
-
-        for rating_object in rating_list:
-            result_rating += rating_object.get('rating') * 3
-        rating_list = Comment.objects.filter(user=self.user).values('rating')
-        for rating in rating_list:
-            result_rating += rating.get('rating')
-        rating_list = Comment.objects.filter(post__author=self).values('rating')
-        for rating in rating_list:
-            result_rating += rating.get('rating')
-        self.rating = result_rating
+        rating_sum = Post.objects.filter(author=self.id).aggregate(sum=Sum('rating'))
+        self.rating = rating_sum['sum'] * 3
+        rating_sum = Comment.objects.filter(user=self.user).aggregate(sum=Sum('rating'))
+        self.rating += rating_sum['sum']
+        rating_sum = Comment.objects.filter(post__author=self).aggregate(sum=Sum('rating'))
+        self.rating += rating_sum['sum']
         self.save()
         return self.rating
 
