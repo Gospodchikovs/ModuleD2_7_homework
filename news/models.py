@@ -11,14 +11,12 @@ class Author(models.Model):
     def update_rating(self) -> int:
         # Рейтинг состоит из следующих слагаемых:
         # - суммарный рейтинг статей автора умножается на 3;
-        # - суммарный рейтинг всех комментариев автора;
+        # - суммарный рейтинг все.х комментариев автора;
         # - суммарный рейтинг всех комментариев к статьям автора.
-        rating_sum = Post.objects.filter(author=self.id).aggregate(sum=Sum('rating'))
-        self.rating = rating_sum['sum'] * 3
-        rating_sum = Comment.objects.filter(user=self.user).aggregate(sum=Sum('rating'))
-        self.rating += rating_sum['sum']
-        rating_sum = Comment.objects.filter(post__author=self).aggregate(sum=Sum('rating'))
-        self.rating += rating_sum['sum']
+        post_sum = Post.objects.filter(author=self.id).aggregate(sum=Sum('rating'))['sum']
+        user_sum = Comment.objects.filter(user=self.user).aggregate(sum=Sum('rating'))['sum']
+        comment_sum = Comment.objects.filter(post__author=self).aggregate(sum=Sum('rating'))['sum']
+        self.rating = post_sum * 3 + user_sum + comment_sum
         self.save()
         return self.rating
 
@@ -55,6 +53,10 @@ class Post(models.Model):
     def preview(self) -> str:
         result = self.body[:124] + '...'
         return result
+
+    def __str__(self):
+        user = self.author.user.username
+        return f'{user}: {self.heading[:30]}'
 
 
 class PostCategory(models.Model):

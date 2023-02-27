@@ -1,0 +1,39 @@
+<!--  наследуемся от шаблона default.html, который мы создавали ещё во времена flatpages -->
+{% extends 'flatpages/default.html' %}
+
+<!-- Название у нас будет proudcts -->
+{% block title %}
+Статья
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим сам товар, айди которого было передано в адрес -->
+{% block content %}
+    {% if post %}
+        <table>
+            <tr>
+                <th>
+                    Заголовок
+                </th>
+                <th>
+                    Дата публикации
+                </th>
+                <th>
+                    Текст
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    {{ post.heading }}
+                </td>
+                <td>
+                    {{ post.time_create|date:'d.m.y' }}
+                </td>
+                <td>
+                    {{ post.body }}
+                </td>
+            </tr>
+        </table>
+    {% else %}
+        <h2>Такой статьи нет!</h2>
+    {% endif %}
+{% endblock content %}

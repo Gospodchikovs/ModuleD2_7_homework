@@ -1,0 +1,17 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>{% block title %} {{ flatpage.title }} {% endblock title %}</title>
+    </head>
+    <body>
+        <h1>Статьи и новости</h1>
+        <div>
+            {% block content %}
+            {{ flatpage.content }}
+            {% endblock content %}
+        </div>
+    </body>
+</html>
