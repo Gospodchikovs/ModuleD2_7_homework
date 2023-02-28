@@ -56,7 +56,7 @@ class Post(models.Model):
 
     def __str__(self):
         user = self.author.user.username
-        return f'{user}: {self.heading[:30]}'
+        return f'{user}: {self.heading[:30]} - {self.time_create}'
 
 
 class PostCategory(models.Model):

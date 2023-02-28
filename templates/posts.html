@@ -1,12 +1,11 @@
 <!--  наследуемся от шаблона default.html, который мы создавали ещё во времена flatpages -->
 {% extends 'flatpages/default.html' %}
-
-<!-- Название у нас будет proudcts -->
+<!-- загружаем фильтры -->
+{% load custom_filters %}
 {% block title %}
-Новости
+Статьи
 {% endblock title %}
 
-<!-- В контенте на странице мы выводим все товары -->
 {% block content %}
     <h2>Все статьи (общее количество {{ posts|length }})</h2>
     {% if posts %}
@@ -25,13 +24,13 @@
         {% for post in posts %}
             <tr>
                 <td>
-                    {{ post.heading }}
+                    {{ post.heading|censor }}
                 </td>
                 <td>
-                    {{ post.time_create|date:'d.m.y' }}
+                    {{ post.time_create|date:'d-m-y H:i' }}
                 </td>
                 <td>
-                    {{ post.body|truncatewords:20 }}
+                    {{ post.body|truncatechars:50|censor }}
                 </td>
             </tr>
         {% endfor %}
