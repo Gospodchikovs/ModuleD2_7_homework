@@ -17,7 +17,7 @@ class Author(models.Model):
         user_sum = Comment.objects.filter(user=self.user).aggregate(sum=Sum('rating'))['sum']
         comment_sum = Comment.objects.filter(post__author=self).aggregate(sum=Sum('rating'))['sum']
         self.rating = post_sum * 3 + user_sum + comment_sum
-        self.save()
+        self.save() 
         return self.rating
 
 
