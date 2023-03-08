@@ -20,10 +20,15 @@ class Author(models.Model):
         self.save() 
         return self.rating
 
+    def __str__(self):
+        return f'{self.user}'
+
 
 class Category(models.Model):
     topic = models.CharField(max_length=255, unique=True)
 
+    def __str__(self):
+        return f'{self.topic}'
 
 article = 'AR'
 news = 'NW'
@@ -31,13 +36,13 @@ TYPES = [(article, 'Статья'), (news, 'Новость')]
 
 
 class Post(models.Model):
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    type = models.CharField(max_length=2, choices=TYPES, default=news)
-    time_create = models.DateTimeField(auto_now_add=True)
-    category = models.ManyToManyField(Category, through='PostCategory')
-    heading = models.CharField(max_length=255)
-    body = models.TextField()
-    rating = models.IntegerField()
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, verbose_name=u'Автор')
+    type = models.CharField(max_length=2, choices=TYPES, default=news, verbose_name=u'Тип')
+    time_create = models.DateTimeField(auto_now_add=True, verbose_name=u'Дата создания')
+    category = models.ManyToManyField(Category, through='PostCategory', verbose_name=u'Категория')
+    heading = models.CharField(verbose_name=u'Заголовок', max_length=255)
+    body = models.TextField(verbose_name=u'Текст')
+    rating = models.IntegerField(default=0)
 
     # увеличенрие рейтинга на 1
     def like(self):
@@ -57,6 +62,9 @@ class Post(models.Model):
     def __str__(self):
         user = self.author.user.username
         return f'{user}: {self.heading[:30]} - {self.time_create}'
+
+    def get_absolute_url(self):  # добавим абсолютный путь, чтобы после создания нас перебрасывало на страницу со стаьей
+        return f'/news/{self.id}'
 
 
 class PostCategory(models.Model):

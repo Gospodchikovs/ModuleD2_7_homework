@@ -12,9 +12,24 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
+from django_filters.conf import DEFAULTS
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+FILTERS_DISABLE_HELP_TEXT = True
+
+# заменяем англоязычные окончания на подсказаках в формах
+def FILTERS_VERBOSE_LOOKUPS():
+    verbose_lookups = DEFAULTS['VERBOSE_LOOKUPS'].copy()
+    verbose_lookups.update({
+        'gt': 'позже указанной',
+        'icontains': 'содержит',
+        'in': 'из списка',
+        'date': ''
+    })
+    return verbose_lookups
+
 
 SITE_ID = 1
 # Quick-start development settings - unsuitable for production
@@ -27,7 +42,6 @@ SECRET_KEY = 'django-insecure-w=eqco&)agz87#sn7lhj+7zk1f2d_cf+0gkiw(+u1f322*q1*o
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -43,6 +57,7 @@ INSTALLED_APPS = [
     'news',
     'django.contrib.sites',
     'django.contrib.flatpages',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
