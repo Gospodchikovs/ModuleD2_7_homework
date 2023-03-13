@@ -5,11 +5,13 @@
         <title>{% block title %} {{ flatpage.title }} {% endblock title %}</title>
     </head>
     <body>
-        <h1>Общий заголовок</h1>
+        <a href="/search/">Общий список</a>
+        <br>
         <div>
             {% block content %}
             {{ flatpage.content }}
             {% endblock content %}
         </div>
+        <a href="/logout/">Выйти</a>
     </body>
 </html>
