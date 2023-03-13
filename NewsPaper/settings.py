@@ -18,6 +18,7 @@ from django_filters.conf import DEFAULTS
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 FILTERS_DISABLE_HELP_TEXT = True
+LOGIN_REDIRECT_URL = '/'
 
 # заменяем англоязычные окончания на подсказаках в формах
 def FILTERS_VERBOSE_LOOKUPS():

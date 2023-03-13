@@ -2,6 +2,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from .models import Post
 from .filters import PostFilter
 from .forms import PostForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class PostList(ListView):
@@ -50,7 +51,7 @@ class PostCreate(CreateView):
     success_url = '/news/search/'
 
 
-class PostUpdate(UpdateView):
+class PostUpdate(LoginRequiredMixin,UpdateView):
     template_name = 'post_create.html'
     form_class = PostForm
     success_url = '/news/search/'
