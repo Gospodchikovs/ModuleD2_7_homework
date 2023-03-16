@@ -61,9 +61,7 @@ class PostCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         _id = self.kwargs.get('pk')
         return Post.objects.get(pk=_id)
 
-
-class PostUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
-    permission_required = ('news.change_post')
+class PostUpdate(LoginRequiredMixin,UpdateView):
     template_name = 'post_create.html'
     form_class = PostForm
     success_url = '/search/'

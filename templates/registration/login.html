@@ -1,7 +1,20 @@
 {% extends 'flatpages/default.html' %}
 
 {% block content %}
-<h2> Войти в систему </h2>
+
+{% if form.errors %}
+  <p>Имя или пароль неверны. Попробуйте еще раз.</p>
+{% endif %}
+
+{% if next %}
+  {% if user.is_authenticated %}
+    <p>У вас нет прав для доступа к этой странице. Для продолжения водйите с использованием аккаунта,
+      с нужными правами доступа.</p>
+  {% else %}
+    <p>Пожайлуйста авторизуйтесь чтобы продолжить.</p>
+  {% endif %}
+{% endif %}
+
 <form method="post" action="{% url 'login' %}">
     {% csrf_token %}
     <table>
