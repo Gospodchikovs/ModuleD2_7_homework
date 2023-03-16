@@ -1,10 +1,13 @@
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView, TemplateView
 from .models import Post
 from .filters import PostFilter
-from .forms import PostForm, BaseRegisterForm
-from django.contrib.auth.mixins import LoginRequiredMixin
+from .forms import PostForm, BaseRegisterForm, ProfileEditForm
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import User
 from django.views.generic.edit import CreateView
+from django.shortcuts import redirect
+from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import login_required
 
 
 class PostList(ListView):
@@ -32,6 +35,7 @@ class PostListSearch(ListView):
         parameters = request_copy.pop('page', True) and request_copy.urlencode()
         context['parameters'] = parameters  # хвост get запроса для коррктной работы пагинатора
         context['form'] = PostForm()
+        context['is_not_author'] = not self.request.user.groups.filter(name='authors').exists()
         return context
 
     def post(self, request, *args, **kwargs):
@@ -47,13 +51,8 @@ class PostDetail(DetailView):
     context_object_name = 'post'
 
 
-class PostCreate(LoginRequiredMixin, CreateView):
-    template_name = 'post_create.html'
-    form_class = PostForm
-    success_url = '/search/'
-
-
-class PostUpdate(LoginRequiredMixin, UpdateView):
+class PostCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    permission_required = ('news.add_post')
     template_name = 'post_create.html'
     form_class = PostForm
     success_url = '/search/'
@@ -63,7 +62,19 @@ class PostUpdate(LoginRequiredMixin, UpdateView):
         return Post.objects.get(pk=_id)
 
 
-class PostDelete(LoginRequiredMixin, DeleteView):
+class PostUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    permission_required = ('news.change_post')
+    template_name = 'post_create.html'
+    form_class = PostForm
+    success_url = '/search/'
+
+    def get_object(self, **kwargs):
+        _id = self.kwargs.get('pk')
+        return Post.objects.get(pk=_id)
+
+
+class PostDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+    permission_required = ('news.delete_post')
     template_name = 'post_delete.html'
     queryset = Post.objects.all()
     success_url = '/search/'
@@ -71,9 +82,29 @@ class PostDelete(LoginRequiredMixin, DeleteView):
 
 class BaseRegisterView(CreateView):
     model = User
+    template_name = 'registration/signup.html'
     form_class = BaseRegisterForm
     success_url = '/'
 
 
-class IndexView(LoginRequiredMixin, TemplateView):
+class UserUpdateView(UpdateView):
+    model = User
+    template_name = 'registration/profile.html'
+    form_class = ProfileEditForm
+    success_url = '/'
+
+    def get_object(self):
+        return self.request.user
+
+
+class UserView(LoginRequiredMixin, TemplateView):
     template_name = 'user.html'
+
+
+@login_required
+def upgrade_me(request):
+    user = request.user
+    premium_group = Group.objects.get(name='authors')
+    if not request.user.groups.filter(name='authors').exists():
+        premium_group.user_set.add(user)
+    return redirect('/')

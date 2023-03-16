@@ -2,9 +2,7 @@
 {% extends 'flatpages/default.html' %}
 <!-- загружаем фильтры -->
 {% load custom_filters %}
-{% block title %}
-Статьи
-{% endblock title %}
+{% block title %} Статьи {% endblock title %}
 
 {% block content %}
     {% if posts %}
@@ -12,7 +10,12 @@
             {{ filter.form}}
             <input type="submit" value="Найти">
             <br>
-            <a href="{% url 'post_search' %}">Сбросить фильтр</a>
+            <a href="{% url 'post_search' %}"> Сбросить фильтр </a>
+            <a href="{% url 'post_create' %}">| Новая статья </a>
+            <a href="{% url 'user' %}">| Страница пользователя </a>
+            {% if is_not_author %}
+                <a href="/upgrade/">| Стать автором</a>
+            {% endif %}
         </form>
         <hr>
         <table>
@@ -71,5 +74,4 @@
         {% endif %}
     {% endif %}
     <br><br>
-    <a href="{% url 'post_create' %}">Добавить новую статью</a>
 {% endblock content %}
