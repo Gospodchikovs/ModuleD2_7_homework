@@ -1,5 +1,5 @@
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView, TemplateView
-from .models import Post
+from .models import Post, Category, Subscriber, Author, PostCategory
 from .filters import PostFilter
 from .forms import PostForm, BaseRegisterForm, ProfileEditForm
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -8,6 +8,8 @@ from django.views.generic.edit import CreateView
 from django.shortcuts import redirect
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 
 
 class PostList(ListView):
@@ -15,6 +17,46 @@ class PostList(ListView):
     template_name = 'posts.html'
     context_object_name = 'posts'
     ordering = '-time_create'
+
+
+class CategoryList(LoginRequiredMixin, ListView):
+    model = Category
+    template_name = 'category.html'
+    context_object_name = 'categories'
+
+    def get_context_data(self, **kwargs):
+
+        class Sublist:
+            def __init__(self, news_category, subscribed):
+                self.category = news_category       # категория
+                self.is_subscribed = subscribed     # признак подписки пользоывателя на данную категорию
+
+        context = super().get_context_data(**kwargs)
+        # формируем список объектов Sublist(категория,признак подписки) для передачи в страницу
+        user_cat = list(Subscriber.objects.filter(user=self.request.user).values('category__topic').distinct())
+        all_cat = list(Category.objects.all().values('topic'))                      # список всех категорий
+        user_cat_list = list(map(lambda cat: cat['category__topic'], user_cat))     # список подписных категорий
+        subscribed_list = list(map(lambda cat: Sublist(cat['topic'], cat['topic'] in user_cat_list), all_cat))
+        context['subscribed'] = subscribed_list
+        return context
+
+
+@login_required
+def subscribe(request, *args, **kwargs):
+    user = request.user
+    category = Category.objects.get(id=kwargs.get('pk'))
+    subscriber = Subscriber()
+    subscriber.add_subscriber(category, user)
+    return redirect('/categories')
+
+
+@login_required
+def unsubscribe(request, *args, **kwargs):
+    user = request.user
+    category = Category.objects.get(id=kwargs.get('pk'))
+    subscriber = Subscriber()
+    subscriber.delete_subscriber(category, user)
+    return redirect('/categories')
 
 
 class PostListSearch(ListView):
@@ -56,6 +98,32 @@ class PostCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     template_name = 'post_create.html'
     form_class = PostForm
     success_url = '/search/'
+
+    def post(self, request, *args, **kwargs):
+        news = Post.objects.create(
+            author=Author.objects.get(pk=request.POST['author']),
+            type=request.POST['type'],
+            heading=request.POST['heading'],
+            body=request.POST['body']
+        )
+        category = Category.objects.get(id=request.POST['category'])
+        postcategory = PostCategory(post=news, category=category)
+        postcategory.save()
+
+        users = Subscriber.objects.filter(category=category).values('user__username', 'user__email').distinct()
+        for user in users:
+            if (user['user__email'] != ''):
+                news.username = user["user__username"]
+                html_content = render_to_string('letter.html', {'news': news})
+                msg = EmailMultiAlternatives(
+                     subject=f'Новость для {user["user__username"]}',
+                     body=request.POST['body'],
+                     from_email='s.gospodchikov@yandex.ru',
+                     to=[user['user__email']],
+                )
+                msg.attach_alternative(html_content, "text/html")
+                msg.send()
+        return super().get(request, *args, **kwargs)
 
     def get_object(self, **kwargs):
         _id = self.kwargs.get('pk')

@@ -22,6 +22,7 @@ LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/accounts/login/'
 ALLOWED_HOSTS = ['127.0.0.1']
 
+
 # заменяем англоязычные окончания на подсказаках в формах
 def FILTERS_VERBOSE_LOOKUPS():
     verbose_lookups = DEFAULTS['VERBOSE_LOOKUPS'].copy()
@@ -164,3 +165,9 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 ACCOUNT_FORMS = {'signup': 'news.forms.BasicSignupForm'}
 LANGUAGE_CODE ='ru'
+
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 's.gospodchikov'
+EMAIL_HOST_PASSWORD = 'xshdotqgtiefwsgx'
+EMAIL_USE_SSL = True

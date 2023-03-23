@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from .models import Post
+from .models import Post, Category
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group
 from django import forms
@@ -10,7 +10,6 @@ class PostForm(ModelForm):
     class Meta:
         model = Post
         fields = ['author', 'type', 'category', 'heading', 'body']
-
 
 class ProfileEditForm(ModelForm):
     email = forms.EmailField(label="Email")
