@@ -26,6 +26,7 @@ class CategoryList(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
 
+        # класс для передачи в страницу - категория и признак полписки польщователя
         class Sublist:
             def __init__(self, news_category, subscribed):
                 self.category = news_category       # категория
