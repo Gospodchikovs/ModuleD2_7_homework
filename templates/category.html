@@ -1,0 +1,42 @@
+<!--  наследуемся от шаблона default.html, который мы создавали ещё во времена flatpages -->
+{% extends 'flatpages/default.html' %}
+{% block title %}
+Категории
+{% endblock title %}
+
+{% block content %}
+    {% if categories %}
+        <table>
+            <tr>
+                <th>
+                    Категория
+                </th>
+                <th>
+                    Подпись
+                </th>
+            </tr>
+            {% for category in categories %}
+            <tr>
+                <td>
+                    {{ category.topic }}
+                </td>
+                <td>
+                    {% for user_ctaegory in subscribed %}
+                        {% if user_ctaegory.category == category.topic %}
+                            {% if user_ctaegory.is_subscribed %}
+                                Подписан
+                                <a href="{% url 'unsubscribe' category.id %}">Отписаться</a>
+                            {% else %}
+                                Не подписан
+                                <a href="{% url 'subscribe' category.id %}">Подписаться</a>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <h2>Список категорий пуст!</h2>
+    {% endif %}
+{% endblock content %}

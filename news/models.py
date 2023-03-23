@@ -26,16 +26,16 @@ class Author(models.Model):
 
 class Category(models.Model):
     topic = models.CharField(max_length=255, unique=True)
+    subscribers = models.ManyToManyField(User, through='Subscriber', verbose_name=u'Полписчик')
 
     def __str__(self):
         return f'{self.topic}'
 
-article = 'AR'
-news = 'NW'
-TYPES = [(article, 'Статья'), (news, 'Новость')]
-
 
 class Post(models.Model):
+    article = 'AR'
+    news = 'NW'
+    TYPES = [(article, 'Статья'), (news, 'Новость')]
     author = models.ForeignKey(Author, on_delete=models.CASCADE, verbose_name=u'Автор')
     type = models.CharField(max_length=2, choices=TYPES, default=news, verbose_name=u'Тип')
     time_create = models.DateTimeField(auto_now_add=True, verbose_name=u'Дата создания')
@@ -54,9 +54,14 @@ class Post(models.Model):
         self.rating -= 1           # рейтинг может быть отрицательным
         self.save()
 
-    # получение превью строки с окончанием на '...'
+    # получение превью стстьи с окончанием на '...'
     def preview(self) -> str:
         result = self.body[:124] + '...'
+        return result
+
+    # получение укороченного заголовка
+    def shot_heading(self) -> str:
+        result = self.heading[:50] + '...'
         return result
 
     def __str__(self):
@@ -88,3 +93,22 @@ class Comment(models.Model):
     def dislike(self):
         self.rating -= 1            # рейтинг может быть отрицательным
         self.save()
+
+
+class Subscriber(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def add_subscriber(self, category, user):
+        self.user = user
+        self.category = category
+        self.save()
+
+    @staticmethod
+    def delete_subscriber(category, user):
+        Subscriber.objects.filter(user=user, category=category).delete()
+
+    def __str__(self):
+        user = self.user.username
+        category = self.category.topic
+        return f'{user}: {category[:30]}'

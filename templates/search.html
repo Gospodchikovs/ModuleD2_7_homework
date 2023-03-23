@@ -13,6 +13,7 @@
             <a href="{% url 'post_search' %}"> Сбросить фильтр </a>
             <a href="{% url 'post_create' %}">| Новая статья </a>
             <a href="{% url 'user' %}">| Страница пользователя </a>
+            <a href="{% url 'categories' %}">| Категории новостей</a>
             {% if is_not_author %}
                 <a href="/upgrade/">| Стать автором</a>
             {% endif %}
