@@ -2,7 +2,7 @@ from django.urls import path
 from .views import UserView, PostListSearch, PostDetail, PostUpdate, PostDelete, PostCreate, BaseRegisterView
 from .views import UserUpdateView, CategoryList
 from django.contrib.auth.views import LoginView, LogoutView
-from .views import upgrade_me, subscribe, unsubscribe
+from .views import upgrade_me, subscribe, unsubscribe, restriction_num_posts
 
 
 urlpatterns = [
@@ -21,4 +21,5 @@ urlpatterns = [
     path('categories/', CategoryList.as_view(), name='categories'),
     path('scategories/<int:pk>/subscribe/', subscribe, name='subscribe'),
     path('scategories/<int:pk>/unsubscribe/', unsubscribe, name='unsubscribe'),
+    path('error/', restriction_num_posts, name='restriction_num_posts'),
 ]

@@ -58,7 +58,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
 
-    'news',
+    'news.apps.NewsConfig',
     'django.contrib.sites',
     'django.contrib.flatpages',
     'django_filters',
@@ -161,7 +161,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
 ACCOUNT_FORMS = {'signup': 'news.forms.BasicSignupForm'}
 LANGUAGE_CODE ='ru'
@@ -169,5 +169,8 @@ LANGUAGE_CODE ='ru'
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = 's.gospodchikov'
-EMAIL_HOST_PASSWORD = 'shdotqgtiefwsg'  # пароль изменен.
+EMAIL_HOST_PASSWORD = 'xshdotqgtiefwsgx'  # пароль изменен.
 EMAIL_USE_SSL = True
+DEFAULT_FROM_EMAIL = 's.gospodchikov@yandex.ru'
+
+USE_TZ = False

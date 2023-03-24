@@ -9,7 +9,8 @@ from allauth.account.forms import SignupForm
 class PostForm(ModelForm):
     class Meta:
         model = Post
-        fields = ['author', 'type', 'category', 'heading', 'body']
+        fields = ['type', 'category', 'heading', 'body']
+
 
 class ProfileEditForm(ModelForm):
     email = forms.EmailField(label="Email")

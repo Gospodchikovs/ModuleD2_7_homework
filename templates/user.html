@@ -2,7 +2,7 @@
 
 {% block content %}
     Страница авторизованного пользователя {{request.user.username}}
-    {% if not is_not_author %}
+    {% if is_author %}
         (является автором)
     {% endif %}
     <br>
