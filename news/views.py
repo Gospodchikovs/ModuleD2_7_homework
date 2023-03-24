@@ -1,5 +1,3 @@
-from smtplib import SMTPDataError
-
 from django.http import HttpResponse
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView, TemplateView
 from .models import Post, Category, Subscriber, Author, PostCategory
@@ -181,4 +179,4 @@ def upgrade_me(request):
 
 # сообщение об ошибке при создании  больее трех статей за сутки.
 def restriction_num_posts(request):
-    return HttpResponse(f"<h2> Запрезено создавать больше трех статей за сутки! </h2>")
+    return HttpResponse(f"<h2> Запрещено создавать больше трех статей за сутки! </h2>")

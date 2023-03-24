@@ -7,7 +7,7 @@ from .views import upgrade_me, subscribe, unsubscribe, restriction_num_posts
 
 urlpatterns = [
     path('',  PostListSearch.as_view(), name='post_search'),
-    path('<int:pk>/', PostDetail.as_view()),
+    path('<int:pk>/', PostDetail.as_view(), name = 'post'),
     path('search/', PostListSearch.as_view(), name='post_search'),
     path('add/', PostCreate.as_view(), name='post_create'),
     path('<int:pk>/edit/', PostUpdate.as_view(), name='post_update'),

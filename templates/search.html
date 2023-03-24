@@ -37,7 +37,7 @@
         {% for post in posts %}
             <tr>
                 <td>
-                    {{ post.heading|censor }}
+                    <a href="{% url 'post' post.id %}">{{ post.heading|censor  }}</a>
                 </td>
                 <td>
                     {{ post.time_create|date:'d-m-y H:i' }}

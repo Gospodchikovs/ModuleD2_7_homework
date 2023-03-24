@@ -134,13 +134,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
-USE_TZ = True
-
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -169,8 +165,7 @@ LANGUAGE_CODE ='ru'
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = 's.gospodchikov'
-EMAIL_HOST_PASSWORD = 'shdotqgtiefwsg'  # пароль изменен.
+EMAIL_HOST_PASSWORD = 'xshdotqgtiefwsgx'  # пароль изменен.
 EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = 's.gospodchikov@yandex.ru'
 
-USE_TZ = False

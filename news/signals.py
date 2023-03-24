@@ -4,6 +4,7 @@ from .models import Post, PostCategory, Subscriber, Category
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 import datetime
+from django.contrib.sites.models import Site
 
 
 @receiver(post_save, sender=PostCategory)
@@ -12,6 +13,7 @@ def postcategory_save_handler(sender, instance, created, **kwargs):
         category = instance.category.id
         users = Subscriber.objects.filter(category=category).values('user__username', 'user__email').distinct()
         news = Post.objects.get(id=instance.post.id)
+        news.url_for_letter = 'http://' + Site.objects.get_current().domain + ':8000/' + str(news.id) + '/'
         for user in users:
             if (user['user__email'] != ''):
                 news.username = user["user__username"]
