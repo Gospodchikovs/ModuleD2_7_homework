@@ -169,7 +169,7 @@ LANGUAGE_CODE ='ru'
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = 's.gospodchikov'
-EMAIL_HOST_PASSWORD = 'xshdotqgtiefwsgx'  # пароль изменен.
+EMAIL_HOST_PASSWORD = 'shdotqgtiefwsg'  # пароль изменен.
 EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = 's.gospodchikov@yandex.ru'
 
