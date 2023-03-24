@@ -1,3 +1,6 @@
+from smtplib import SMTPDataError
+
+from django.http import HttpResponse
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView, TemplateView
 from .models import Post, Category, Subscriber, Author, PostCategory
 from .filters import PostFilter
@@ -8,8 +11,6 @@ from django.views.generic.edit import CreateView
 from django.shortcuts import redirect
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
 
 
 class PostList(ListView):
@@ -78,7 +79,7 @@ class PostListSearch(ListView):
         parameters = request_copy.pop('page', True) and request_copy.urlencode()
         context['parameters'] = parameters  # хвост get запроса для коррктной работы пагинатора
         context['form'] = PostForm()
-        context['is_not_author'] = not self.request.user.groups.filter(name='authors').exists()
+        context['is_author'] = self.request.user.groups.filter(name='authors').exists()
         return context
 
     def post(self, request, *args, **kwargs):
@@ -101,30 +102,24 @@ class PostCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     success_url = '/search/'
 
     def post(self, request, *args, **kwargs):
-        news = Post.objects.create(
-            author=Author.objects.get(pk=request.POST['author']),
-            type=request.POST['type'],
-            heading=request.POST['heading'],
-            body=request.POST['body']
-        )
-        category = Category.objects.get(id=request.POST['category'])
-        postcategory = PostCategory(post=news, category=category)
-        postcategory.save()
-
-        users = Subscriber.objects.filter(category=category).values('user__username', 'user__email').distinct()
-        for user in users:
-            if (user['user__email'] != ''):
-                news.username = user["user__username"]
-                html_content = render_to_string('letter.html', {'news': news})
-                msg = EmailMultiAlternatives(
-                     subject=f'Новость для {user["user__username"]}',
-                     body=request.POST['body'],
-                     from_email='s.gospodchikov@yandex.ru',
-                     to=[user['user__email']],
-                )
-                msg.attach_alternative(html_content, "text/html")
-                msg.send()
-        return super().get(request, *args, **kwargs)
+        if Author.objects.filter(user=request.user).exists():
+            author = Author.objects.get(user=request.user)        # автор зарегистрирован
+        else:
+            author = Author.objects.create(user=request.user)     # создаем пользователя
+        try:
+            news = Post.objects.create(
+                author=author,
+                type=request.POST['type'],
+                heading=request.POST['heading'],
+                body=request.POST['body']
+            )
+        except Warning:
+            return redirect('/error')
+        else:
+            category = Category.objects.get(id=request.POST['category'])
+            postcategory = PostCategory(post=news, category=category)
+            postcategory.save()
+        return redirect('/search')
 
     def get_object(self, **kwargs):
         _id = self.kwargs.get('pk')
@@ -169,6 +164,11 @@ class UserUpdateView(UpdateView):
 class UserView(LoginRequiredMixin, TemplateView):
     template_name = 'user.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_author'] = self.request.user.groups.filter(name='authors').exists()
+        return context
+
 
 @login_required
 def upgrade_me(request):
@@ -177,3 +177,8 @@ def upgrade_me(request):
     if not request.user.groups.filter(name='authors').exists():
         premium_group.user_set.add(user)
     return redirect('/')
+
+
+# сообщение об ошибке при создании  больее трех статей за сутки.
+def restriction_num_posts(request):
+    return HttpResponse(f"<h2> Запрезено создавать больше трех статей за сутки! </h2>")
