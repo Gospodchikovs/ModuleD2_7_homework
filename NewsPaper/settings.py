@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'django_apscheduler',
 ]
 
 MIDDLEWARE = [
@@ -136,7 +137,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
-USE_TZ = False
+USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -160,12 +161,13 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
 ACCOUNT_FORMS = {'signup': 'news.forms.BasicSignupForm'}
-LANGUAGE_CODE ='ru'
+LANGUAGE_CODE = 'ru'
 
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = 's.gospodchikov'
-EMAIL_HOST_PASSWORD = 'xshdotqgtiefwsgx'  # пароль изменен.
+EMAIL_HOST_PASSWORD = 'shdotqgtiefwsgx'  # пароль изменен.
 EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = 's.gospodchikov@yandex.ru'
-
+APSCHEDULER_DATETIME_FORMAT = 'N j, Y, f:s a'
+APSCHEDULER_RUN_NOW_TIMEOUT = 25

@@ -32,7 +32,7 @@ class CategoryList(LoginRequiredMixin, ListView):
                 self.is_subscribed = subscribed     # признак подписки пользоывателя на данную категорию
 
         context = super().get_context_data(**kwargs)
-        # формируем список объектов Sublist(категория,признак подписки) для передачи в страницу
+        # формируем список объектов Sublist(категория, признак подписки) для передачи в страницу
         user_cat = list(Subscriber.objects.filter(user=self.request.user).values('category__topic').distinct())
         all_cat = list(Category.objects.all().values('topic'))                      # список всех категорий
         user_cat_list = list(map(lambda cat: cat['category__topic'], user_cat))     # список подписных категорий
@@ -177,6 +177,6 @@ def upgrade_me(request):
     return redirect('/')
 
 
-# сообщение об ошибке при создании  больее трех статей за сутки.
+# сообщение об ошибке при создании больее трех статей за сутки.
 def restriction_num_posts(request):
     return HttpResponse(f"<h2> Запрещено создавать больше трех статей за сутки! </h2>")

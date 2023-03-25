@@ -1,9 +1,10 @@
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
-from .models import Post, PostCategory, Subscriber, Category
+from .models import Post, PostCategory, Subscriber
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 import datetime
+from django.utils import timezone
 from django.contrib.sites.models import Site
 
 
@@ -36,7 +37,7 @@ def postcategory_save_handler(sender, instance, created, **kwargs):
 #
 @receiver(pre_save, sender=Post)
 def post_presave_handler(sender, instance, **kwargs):
-    control_date = datetime.datetime.now() - datetime.timedelta(days=1)                      # отматываем сутки назад
+    control_date = timezone.now() - datetime.timedelta(days=1)                      # отматываем сутки назад
     posts = Post.objects.filter(author=instance.author.id, time_create__gt=control_date)     # список за последние сутки
     if len(posts) >= 3 and instance.pk is None:                     # проверяем, что речь идет о создании нового поста.
         raise Warning('Доступ запрещен. Запрещено создавать более трех статей за сутки!')
