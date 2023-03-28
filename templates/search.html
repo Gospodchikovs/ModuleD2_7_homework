@@ -3,20 +3,23 @@
 <!-- загружаем фильтры -->
 {% load custom_filters %}
 {% block title %} Статьи {% endblock title %}
-
+{% load cache %}
 {% block content %}
     {% if posts %}
         <form method="GET">
             {{ filter.form}}
             <input type="submit" value="Найти">
             <br>
-            <a href="{% url 'post_search' %}"> Сбросить фильтр </a>
-            <a href="{% url 'post_create' %}">| Новая статья </a>
-            <a href="{% url 'user' %}">| Страница пользователя </a>
-            <a href="{% url 'categories' %}">| Категории новостей</a>
+            {% cache 600 menu %}
+                <a href="{% url 'post_search' %}"> Сбросить фильтр </a>
+                <a href="{% url 'post_create' %}">| Новая статья </a>
+                <a href="{% url 'user' %}">| Страница пользователя </a>
+                <a href="{% url 'categories' %}">| Категории новостей</a>
+            {% endcache %}
             {% if not is_author %}
                 <a href="/upgrade/">| Стать автором</a>
             {% endif %}
+
         </form>
         <hr>
         <table>

@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
@@ -70,6 +71,10 @@ class Post(models.Model):
 
     def get_absolute_url(self):  # добавим абсолютный путь, чтобы после создания нас перебрасывало на страницу со стаьей
         return f'/news/{self.id}'
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)  # сначала вызываем метод родителя, чтобы объект сохранился
+        cache.delete(f'post-{self.pk}')  # затем удаляем его из кэша, чтобы сбросить его
 
 
 class PostCategory(models.Model):

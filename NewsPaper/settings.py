@@ -77,7 +77,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware'
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 ]
 
 ROOT_URLCONF = 'NewsPaper.urls'
@@ -171,3 +171,10 @@ EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = 's.gospodchikov@yandex.ru'
 APSCHEDULER_DATETIME_FORMAT = 'N j, Y, f:s a'
 APSCHEDULER_RUN_NOW_TIMEOUT = 25
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache_files'), # Указываем, куда будем сохранять кэшируемые файлы! Не забываем создать папку cache_files внутри папки с manage.py!
+    }
+}

@@ -3,12 +3,12 @@ from .views import UserView, PostListSearch, PostDetail, PostUpdate, PostDelete,
 from .views import UserUpdateView, CategoryList
 from django.contrib.auth.views import LoginView, LogoutView
 from .views import upgrade_me, subscribe, unsubscribe, restriction_num_posts
-
+from django.views.decorators.cache import cache_page
 
 urlpatterns = [
-    path('',  PostListSearch.as_view(), name='post_search'),
+    path('',   cache_page(60)(PostListSearch.as_view()), name='post_search'),
     path('<int:pk>/', PostDetail.as_view(), name='post'),
-    path('search/', PostListSearch.as_view(), name='post_search'),
+    path('search/', cache_page(60)(PostListSearch.as_view()), name='post_search'),
     path('add/', PostCreate.as_view(), name='post_create'),
     path('<int:pk>/edit/', PostUpdate.as_view(), name='post_update'),
     path('<int:pk>/delete/', PostDelete.as_view(), name='post_delete'),

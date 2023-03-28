@@ -1,6 +1,6 @@
 import datetime
 import logging
-from news.models import Post, Subscriber, Category, PostCategory  # pycharm подсвечитвает красным, но все работает.
+from news.models import Post, Subscriber, Category, PostCategory
 from django.conf import settings
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -57,7 +57,7 @@ class Command(BaseCommand):
         # добавляем работу нашему задачнику
         scheduler.add_job(
             my_job,
-            trigger=CronTrigger(day_of_week="mon", hour="00", minute="00"),  # отправка писем раз в неделю
+            trigger=CronTrigger(second="*/10"),# day_of_week="mon", hour="00", minute="00"),  # отправка писем раз в неделю
             id="my_job",
             max_instances=1,
             replace_existing=True,
