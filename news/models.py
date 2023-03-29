@@ -69,6 +69,10 @@ class Post(models.Model):
         user = self.author.user.username
         return f'{user}: {self.heading[:30]} - {self.time_create}'
 
+    def get_author(self):
+        user = self.author.user.username
+        return f'{user}'
+
     def get_absolute_url(self):  # добавим абсолютный путь, чтобы после создания нас перебрасывало на страницу со стаьей
         return f'/news/{self.id}'
 
