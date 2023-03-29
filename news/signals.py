@@ -26,7 +26,7 @@ def postcategory_save_handler(sender, instance, created, **kwargs):
                      to=[user['user__email']],
                 )
                 msg.attach_alternative(html_content, "text/html")
-                msg.send()
+                #msg.send()         # отключил для отладки
     return
 
 

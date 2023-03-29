@@ -7,20 +7,21 @@ class Command(BaseCommand):
     requires_migrations_checks = True
 
     def handle(self, *args, **options):
+        categories_list = PostCategory.objects.all()
         self.stdout.readable()
-        categories_list = PostCategory.objects.all().order_by('category').distinct()
         self.stdout.write('Выберите код категории для удаления')
-        cat_id = []
-        for category in categories_list:
-            self.stdout.write(f"{category.category_id} - {category.category.topic}")
-            cat_id.append(category.category)     # список категорий для выбора
-        category_del = int(input())
-        if category_del in cat_id:
-            self.stdout.write('Вы действительно хотите удалить все новости выбранной категории {? yes/no')
-            answer = input()
-            if answer == 'yes':
-                Post.objects.filter(category__id=category_del).delete()
-                self.stdout.write(self.style.SUCCESS('Успешное удаление новстей!'))
-                return
-        self.stdout.write(self.style.ERROR('Удаление не произведено!'))
+        for category in categories_list.values('category', 'category__topic').order_by('category').distinct():
+            self.stdout.write(f"{category['category']} - {category['category__topic']}")
+        try:
+            category_for_del = int(input())
+        except ValueError:
+            self.stdout.write(self.style.ERROR('Ошиька ввода категории! Удаление не произведено.'))
+        else:
+            if categories_list.filter(category_id=category_for_del).exists():
+                self.stdout.write('Вы действительно хотите удалить все новости выбранной категории? yes/No')
+                if input() == 'yes':
+                    Post.objects.filter(category__id=category_for_del).delete()
+                    self.stdout.write(self.style.SUCCESS('Успешное удаление новстей!'))
+                    return
+            self.stdout.write(self.style.ERROR('Удаление не произведено!'))
         return
